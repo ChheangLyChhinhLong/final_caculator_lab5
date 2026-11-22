@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="km">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>គណនាថ្លៃផ្ញើរយានជំនិះ</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: "Khmer OS Siemreap", "Battambang", Arial, sans-serif;
+        }
+
+        body {
+            background-color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .parking-box {
+            width: 100%;
+            max-width: 440px;
+            background-color: #ffa39f;
+            padding: 36px 26px 32px;
+            color: #181818;
+        }
+
+        .parking-box h2 {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 32px;
+            color: #181818;
+        }
+
+        .row-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .row-item label {
+            flex: 0 0 145px;
+            font-size: 16px;
+            color: #181818;
+        }
+
+        .field-wrap {
+            position: relative;
+            flex: 1;
+        }
+
+        .field-wrap select,
+        .field-wrap input {
+            width: 100%;
+            height: 46px;
+            background-color: transparent;
+            border: 1.5px solid #181818;
+            border-radius: 10px;
+            padding: 0 34px 0 14px;
+            font-size: 16px;
+            color: #181818;
+            outline: none;
+        }
+
+        .field-wrap input[readonly] {
+            cursor: default;
+        }
+
+        .field-wrap select:focus,
+        .field-wrap input:focus {
+            background-color: rgba(255, 255, 255, 0.14);
+        }
+
+        .suffix {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            color: rgba(24, 24, 24, 0.55);
+            pointer-events: none;
+        }
+
+        .action-row {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+
+        .btn-calc {
+            width: 225px;
+            height: 46px;
+            background-color: #b71c1c;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-calc:hover {
+            background-color: #961616;
+        }
+
+        .btn-calc:active {
+            background-color: #7a1010;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="parking-box">
+        <h2>គណនាថ្លៃផ្ញើរយានជំនិះ:</h2>
+
+        <div class="row-item">
+            <label for="vehicle">ជ្រើសរើស យានជំនិះ:</label>
+            <div class="field-wrap">
+                <select id="vehicle">
+                    <option value="car">ឡាន</option>
+                    <option value="moto">ម៉ូតូ</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row-item">
+            <label for="timeIn">ម៉ោងចូល</label>
+            <div class="field-wrap">
+                <input type="time" id="timeIn">
+            </div>
+        </div>
+
+        <div class="row-item">
+            <label for="timeOut">ម៉ោងចេញ</label>
+            <div class="field-wrap">
+                <input type="time" id="timeOut">
+            </div>
+        </div>
+
+        <div class="row-item">
+            <label for="riel">ថ្លៃផ្ញើរ រៀល</label>
+            <div class="field-wrap">
+                <input type="text" id="riel" readonly>
+                <span class="suffix">៛</span>
+            </div>
+        </div>
+
+        <div class="row-item">
+            <label for="dollar">ថ្លៃផ្ញើរ ដុល្លា</label>
+            <div class="field-wrap">
+                <input type="text" id="dollar" readonly>
+                <span class="suffix">$</span>
+            </div>
+        </div>
+
+        <div class="action-row">
+            <button type="button" class="btn-calc" onclick="calculateParking()">គណនា</button>
+        </div>
+    </div>
+
+    <script>
+        function calculateParking() {
+            const vehicle = document.getElementById("vehicle").value;
+            const timeIn = document.getElementById("timeIn").value;
+            const timeOut = document.getElementById("timeOut").value;
+
+            if (!timeIn || !timeOut) {
+                alert("សូមបញ្ចូលម៉ោងចូល និងម៉ោងចេញ!");
+                return;
+            }
+
+            const [inH, inM] = timeIn.split(":").map(Number);
+            const [outH, outM] = timeOut.split(":").map(Number);
+
+            let startMinutes = inH * 60 + inM;
+            let endMinutes = outH * 60 + outM;
+
+            if (endMinutes < startMinutes) {
+                endMinutes += 24 * 60;
+            }
+
+            const totalHours = (endMinutes - startMinutes) / 60;
+
+            let rate = 0;
+            if (vehicle === "car") {
+                rate = totalHours <= 8 ? 500 : 1000;
+            } else if (vehicle === "moto") {
+                rate = totalHours <= 8 ? 200 : 300;
+            }
+
+            const totalRiel = totalHours * rate;
+            const totalDollar = totalRiel / 4000;
+
+            document.getElementById("riel").value = totalRiel.toFixed(0);
+            document.getElementById("dollar").value = totalDollar.toFixed(2);
+        }
+    </script>
+
+</body>
+
+</html>
